@@ -12,22 +12,26 @@ export default {
         {
           model_name: "f1",
           field1: 19,
-          field2: 83
+          field2: 83,
+          field3: 33
         },
         {
           model_name: "f2",
           field1: 67,
-          field2: 93
+          field2: 93,
+          field3: 43
         },
         {
           model_name: "f3",
           field1: 10,
-          field2: 56
+          field2: 56,
+          field3: 53
         },
         {
           model_name: "f4",
           field1: 98,
-          field2: 43
+          field2: 43,
+          field2: 63
         }
       ]
     };
@@ -38,10 +42,11 @@ export default {
   methods: {
     drawChart() {
       let models = this.models;
-      models = models.map(i => {
-        i.model_name = i.model_name;
-        return i;
-      });
+      // console.log(models);
+      // models = models.map(i => {
+      //   i.model_name = i.model_name;
+      //   return i;
+      // });
       console.log(models);
       var container = d3.select("#chart"),
         width = 500,

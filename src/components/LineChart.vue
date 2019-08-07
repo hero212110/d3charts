@@ -14,7 +14,7 @@ export default {
   },
 
   mounted() {
-    console.log(this.data);
+    //console.log(this.data);
     this.drawChart();
   },
 
@@ -38,7 +38,7 @@ export default {
       var circleRadiusHover = 6;
 
       let data = this.data;
-      console.log(data);
+      //console.log(data);
       /* Format Data */
 
       let tmp = this.dateFormat(this.dateType);
@@ -51,7 +51,7 @@ export default {
           let date = new Date(d.date);
           d.date = formatDate(date);
           //d.date = parseDate(d.date);
-          d.price = d.price;
+          //d.price = d.price;
         });
       });
 
@@ -102,7 +102,7 @@ export default {
             .attr("x", (width - margin) / 2)
             .attr("y", 5);
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function() {
           svg.select(".title-text").remove();
         })
         .append("path")
@@ -110,7 +110,7 @@ export default {
         .attr("d", d => line(d.values))
         .style("stroke", (d, i) => color(i))
         .style("opacity", lineOpacity)
-        .on("mouseover", function(d) {
+        .on("mouseover", function() {
           d3.selectAll(".line").style("opacity", otherLinesOpacityHover);
           d3.selectAll(".circle").style("opacity", circleOpacityOnLineHover);
           d3.select(this)
@@ -118,7 +118,7 @@ export default {
             .style("stroke-width", lineStrokeHover)
             .style("cursor", "pointer");
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function() {
           d3.selectAll(".line").style("opacity", lineOpacity);
           d3.selectAll(".circle").style("opacity", circleOpacity);
           d3.select(this)
@@ -147,7 +147,7 @@ export default {
             .attr("x", d => xScale(d.date) + 5)
             .attr("y", d => yScale(d.price) - 10);
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function() {
           d3.select(this)
             .style("cursor", "none")
             .transition()
@@ -160,13 +160,13 @@ export default {
         .attr("cy", d => yScale(d.price))
         .attr("r", circleRadius)
         .style("opacity", circleOpacity)
-        .on("mouseover", function(d) {
+        .on("mouseover", function() {
           d3.select(this)
             .transition()
             .duration(duration)
             .attr("r", circleRadiusHover);
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function() {
           d3.select(this)
             .transition()
             .duration(duration)
@@ -218,7 +218,8 @@ export default {
       let en = ["%d", "%m", "%Y"];
       let tmp = "";
       for (let i in cn) {
-        value == cn[i] ? (tmp = en[i]) : (tmp = tmp);
+        value == cn[i] ? (tmp = en[i]) : "";
+        //tmp = (value == cn[i]) ? en[i] : tmp;
       }
       return tmp;
     }
