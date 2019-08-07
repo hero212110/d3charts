@@ -1,6 +1,6 @@
 <template>
   <div id="chart">
-    <svg style="background-color:whitesmoke" />
+    <svg id="line" style="background-color:whitesmoke" />
   </div>
 </template>
 
@@ -20,7 +20,7 @@ export default {
 
   methods: {
     drawChart() {
-      d3.select("svg").html("");
+      d3.select("svg#line").html("");
       var width = 350;
       var height = 300;
       var margin = 50;
@@ -45,7 +45,7 @@ export default {
 
       var formatDate = d3.timeFormat(tmp);
       //var parseDate = d3.timeParse(tmp);
-
+      //console.log(data);
       data.forEach(function(d) {
         d.values.forEach(function(d) {
           let date = new Date(d.date);
@@ -72,7 +72,7 @@ export default {
       /* Add SVG */
       var svg = d3
         //.append("svg")
-        .select("svg")
+        .select("svg#line")
         .attr("width", width + margin + "px")
         .attr("height", height + margin + "px")
         .append("g")

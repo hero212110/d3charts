@@ -1,12 +1,19 @@
 <template>
   <div>
     <div style="width:100%;background-color:white">
+      <div v-if="barchartdata">
+      <BarChart :data="barchartdata" :dateType="dateType"></BarChart>
+      </div>
+
+      <!-- <BarChart></BarChart> -->
+
       <div v-if="chartdata">
         <LineChart :data="chartdata" :dateType="dateType"></LineChart>
       </div>
-      <BarChart></BarChart>
+      
       <v-select style="width:7%;margin-left:37%" :options="dateTypeArr" v-model="dateType"></v-select>
     </div>
+    
   </div>
 </template>
 
@@ -19,6 +26,7 @@ export default {
   data: function() {
     return {
       data: null,
+      bardata: null,
       box: null,
       dateTypeArr: ["年", "月", "日"],
       dateType: null
@@ -31,16 +39,23 @@ export default {
   computed: {
     chartdata() {
       if (!this.data | !this.dateType) return null;
+      //console.log(this.data);
       return this.data;
+    },
+    barchartdata() {
+      if (!this.bardata | !this.dateType) return null;
+      //console.log(this.bardata);
+      return this.bardata;
     }
   },
   methods: {
     sendApi() {
-      let url = `2633${this.dateType_en(this.dateType)}.json`;
+      let url = `0050${this.dateType_en(this.dateType)}.json`;
       //console.log(url);
       this.axios.get(url).then(
         response => {
           //console.log(response.data);
+          //linedata here
           let dataArr = [];
           let obj = {};
           obj.names = response.data[0]["證券名稱"];
@@ -58,6 +73,22 @@ export default {
           dataArr.push(obj);
           //console.log(dataArr);
           this.data = dataArr;
+
+          //bardata here
+          let barObj = {};
+          barObj.name = [];
+          barObj.date = [];
+          barObj.value = [];
+          barObj.value.push([]);
+          barObj.name.push(response.data[0]["證券名稱"]);
+          for (let i in response.data) {
+            let newDate = new Date();
+            newDate.setTime(response.data[i]["標借日期"]);
+            barObj.date.push(newDate.toString());
+            barObj.value[0].push(response.data[i]["最高標借單價"]);
+          }
+          //console.log(barObj);
+          this.bardata = barObj;
         },
         error => {
           //console.log("error msg:", error);

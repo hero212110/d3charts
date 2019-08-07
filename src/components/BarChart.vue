@@ -1,6 +1,6 @@
 <template>
-  <div id="chart">
-    <svg />
+  <div id="barchart">
+    <svg id="bar" style="background-color:azure" />
   </div>
 </template>
 
@@ -11,31 +11,36 @@ export default {
   data() {
     return {};
   },
+  props: ["data", "dateType"],
   mounted() {
     this.drawChart();
   },
   methods: {
     drawChart() {
-      d3.select("svg").html("");
-      //   var n = 5, // number of samples
-      //     m = 3; // number of series
+      //   let data = {
+      //     name: ["a", "b", "c"],
+      //     date: [2013, 2014, 2015, 2016, 2017, 2018, 2019],
+      //     value: [
+      //       [1, 2, 3, 4, 5, 6, 7],
+      //       [6, 7, 8, 9, 1, 6, 7],
+      //       [11, 12, 13, 14, 15, 7, 8]
+      //     ]
+      //   };
+      d3.select("svg#bar").html("");
+      let data = this.data;
 
-      //   var data = d3.range(m).map(function() {
-      //     return d3.range(n).map(Math.random);
-      //   });
-      //   console.log(data);
+      let tmp = this.dateFormat(this.dateType);
+      var formatDate = d3.timeFormat(tmp);
 
-      let data = [
-        [0.1, 0.2, 0.3, 0.4, 0.5],
-        [0.6, 0.7, 0.8, 0.9, 0.1],
-        [0.11, 0.12, 0.13, 0.14, 0.15]
-      ];
+      for (let i in data.date) {
+        //console.log(data.date[i]);
+        let date = new Date(data.date[i]);
+        data.date[i] = formatDate(date);
+      }
 
-    //   let data = [
-    //     [1, 2, 3, 4, 5],
-    //     [6, 7, 8, 9, 1],
-    //     [11, 12, 13, 14, 15]
-    //   ];
+      //console.log(data);
+      //將陣列扁平化
+      let flatValue = [].concat(...data.value);
 
       var margin = { top: 20, right: 30, bottom: 30, left: 40 },
         width = 350 - margin.left - margin.right,
@@ -43,17 +48,17 @@ export default {
 
       var y = d3
         .scaleLinear()
-        //.domain([0, 1])
-        .range([height, 0]);
+        .domain([0, d3.max(flatValue)])
+        .range([0, height]);
 
       var x0 = d3
         .scaleBand()
-        .domain(d3.range(data[0].length))
+        .domain(d3.range(data.value[0].length))
         .range([0, width], 0.2);
 
       var x1 = d3
         .scaleBand()
-        .domain(d3.range(data.length))
+        .domain(d3.range(data.value.length))
         .range([0, x0.bandwidth() - 10]);
 
       let z = d3.scaleOrdinal(d3.schemeCategory10);
@@ -61,20 +66,19 @@ export default {
       var xScale = d3
         //.scaleTime()
         .scaleLinear()
-        .domain([0, data[0].length])
+        .domain([d3.min(data.date), d3.max(data.date)])
         .range([0, width]);
 
       var yScale = d3
         .scaleLinear()
-        .domain(d3.extent(data[1]))
-        //.domain(d3.extent(data[0].values, d => d.price))
+        .domain([0, d3.max(flatValue)])
         .range([height, 0]);
 
       var xAxis = d3.axisBottom(xScale).ticks(5);
       var yAxis = d3.axisLeft(yScale).ticks(3);
 
       var svg = d3
-        .select("svg")
+        .select("svg#bar")
         //.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -84,7 +88,7 @@ export default {
       svg
         .append("g")
         .selectAll("g")
-        .data(data)
+        .data(data.value)
         .enter()
         .append("g")
         .style("fill", function(d, i) {
@@ -126,7 +130,20 @@ export default {
         .attr("transform", "rotate(0)")
         .attr("fill", "#000")
         .text("單價");
+    },
+    dateFormat(value) {
+      let cn = ["日", "月", "年"];
+      let en = ["%d", "%m", "%Y"];
+      let tmp = "";
+      for (let i in cn) {
+        value == cn[i] ? (tmp = en[i]) : "";
+        //tmp = (value == cn[i]) ? en[i] : tmp;
+      }
+      return tmp;
     }
+  },
+  watch: {
+    data: "drawChart"
   }
 };
 </script>
