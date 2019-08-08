@@ -55,6 +55,8 @@ export default {
         });
       });
 
+      //console.log(data);
+
       /* Scale */
       var xScale = d3
         //.scaleTime()

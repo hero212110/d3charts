@@ -31,52 +31,50 @@ export default {
 
       let tmp = this.dateFormat(this.dateType);
       var formatDate = d3.timeFormat(tmp);
-
       for (let i in data.date) {
         //console.log(data.date[i]);
         let date = new Date(data.date[i]);
         data.date[i] = formatDate(date);
       }
 
+      //如果日期是由大到小 就reverse 變成 由小到大
+      if (data.date[0] > data.date[1]) {
+        data.date.reverse();
+        for (let i in data.value) {
+          data.value[i].reverse();
+        }
+      }
+
       //console.log(data);
       //將陣列扁平化
       let flatValue = [].concat(...data.value);
-
       var margin = { top: 20, right: 30, bottom: 30, left: 40 },
         width = 350 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
-
       var y = d3
         .scaleLinear()
-        .domain([0, d3.max(flatValue)])
+        .domain([d3.min(flatValue)*0.9, d3.max(flatValue)])
         .range([0, height]);
-
       var x0 = d3
         .scaleBand()
         .domain(d3.range(data.value[0].length))
         .range([0, width], 0.2);
-
       var x1 = d3
         .scaleBand()
         .domain(d3.range(data.value.length))
         .range([0, x0.bandwidth() - 10]);
-
       let z = d3.scaleOrdinal(d3.schemeCategory10);
-
       var xScale = d3
         //.scaleTime()
         .scaleLinear()
         .domain([d3.min(data.date), d3.max(data.date)])
         .range([0, width]);
-
       var yScale = d3
         .scaleLinear()
-        .domain([0, d3.max(flatValue)])
+        .domain([d3.min(flatValue)*0.9, d3.max(flatValue)])
         .range([height, 0]);
-
       var xAxis = d3.axisBottom(xScale).ticks(5);
       var yAxis = d3.axisLeft(yScale).ticks(3);
-
       var svg = d3
         .select("svg#bar")
         //.append("svg")
@@ -84,7 +82,6 @@ export default {
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
       svg
         .append("g")
         .selectAll("g")
@@ -111,14 +108,12 @@ export default {
         .attr("y", function(d) {
           return height - y(d);
         });
-
       //x軸
       svg
         .append("g")
         .attr("class", "x axis")
         .attr("transform", `translate(0, ${height})`)
         .call(xAxis);
-
       //y軸
       svg
         .append("g")
@@ -152,14 +147,12 @@ export default {
 .axis text {
   font: 10px sans-serif;
 }
-
 .axis path,
 .axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
-
 .x.axis path {
   display: none;
 }
