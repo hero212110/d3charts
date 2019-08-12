@@ -11,7 +11,7 @@
         <LineChart :data="chartdata" :dateType="dateType"></LineChart>
       </div>
 
-      <v-select style="width:7%;margin-left:37%" :options="dateTypeArr" v-model="dateType"></v-select>
+      <v-select style="width:15%;margin-left:37%" :options="dateTypeArr" v-model="dateType"></v-select>
     </div>
   </div>
 </template>
@@ -74,7 +74,7 @@ export default {
             dataArr.push(obj);
           }
 
-          console.log(dataArr);
+          //console.log(dataArr);
           this.data = dataArr;
 
           // //bardata here

@@ -38,7 +38,7 @@ export default {
       var circleRadiusHover = 6;
 
       let data = this.data;
-      console.log(data);
+      //console.log(data);
       /* Format Data */
 
       let tmp = this.dateFormat(this.dateType);
@@ -62,7 +62,7 @@ export default {
           tmpPrice.push(data[i].values[j].price);
         }
       }
-      console.log(data);
+      //console.log(data);
       /* Scale */
       var xScale = d3
         //.scaleTime()
@@ -73,6 +73,7 @@ export default {
       var yScale = d3
         .scaleLinear()
         //.domain(d3.extent(data[0].values, d => d.price))
+        //yScale的domain必須完全涵蓋多組資料的值, 所以必須取得data的最大最小值
         .domain(d3.extent(tmpPrice))
         .range([height - margin, 0]);
 
