@@ -38,25 +38,31 @@ export default {
       var circleRadiusHover = 6;
 
       let data = this.data;
-      //console.log(data);
+      console.log(data);
       /* Format Data */
 
       let tmp = this.dateFormat(this.dateType);
+      //console.log(tmp)
 
       var formatDate = d3.timeFormat(tmp);
       //var parseDate = d3.timeParse(tmp);
-      //console.log(data);
+
       data.forEach(function(d) {
         d.values.forEach(function(d) {
           let date = new Date(d.date);
           d.date = formatDate(date);
           //d.date = parseDate(d.date);
-          //d.price = d.price;
         });
       });
 
-      //console.log(data);
-
+      let tmpPrice = [];
+      for (let i in data) {
+        for (let j in data[i].values) {
+          //console.log(data[i].values[j].price);
+          tmpPrice.push(data[i].values[j].price);
+        }
+      }
+      console.log(data);
       /* Scale */
       var xScale = d3
         //.scaleTime()
@@ -66,7 +72,8 @@ export default {
 
       var yScale = d3
         .scaleLinear()
-        .domain(d3.extent(data[0].values, d => d.price))
+        //.domain(d3.extent(data[0].values, d => d.price))
+        .domain(d3.extent(tmpPrice))
         .range([height - margin, 0]);
 
       var color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -83,6 +90,10 @@ export default {
       /* Add line into SVG */
       var line = d3
         .line()
+        //用defined 傳回非null的值 ****這邊不用做也沒差 , 直接在父組件那邊skip掉null值就好
+        .defined(function(d){
+          return d.price != null;
+        })
         .x(d => xScale(d.date))
         .y(d => yScale(d.price));
 
@@ -213,7 +224,7 @@ export default {
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("text-decoration", "underline")
-        .text(`${this.data[0].names}`);
+        //.text(`${this.data[0].name}`);
     },
     dateFormat(value) {
       let cn = ["日", "月", "年"];

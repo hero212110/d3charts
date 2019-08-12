@@ -1,19 +1,18 @@
 <template>
   <div>
     <div style="width:100%;background-color:white">
-      <div v-if="barchartdata">
+      <!-- <div v-if="barchartdata">
       <BarChart :data="barchartdata" :dateType="dateType"></BarChart>
-      </div>
+      </div>-->
 
       <!-- <BarChart></BarChart> -->
 
       <div v-if="chartdata">
         <LineChart :data="chartdata" :dateType="dateType"></LineChart>
       </div>
-      
+
       <v-select style="width:7%;margin-left:37%" :options="dateTypeArr" v-model="dateType"></v-select>
     </div>
-    
   </div>
 </template>
 
@@ -41,54 +40,58 @@ export default {
       if (!this.data | !this.dateType) return null;
       //console.log(this.data);
       return this.data;
-    },
-    barchartdata() {
-      if (!this.bardata | !this.dateType) return null;
-      //console.log(this.bardata);
-      return this.bardata;
     }
+    // barchartdata() {
+    //   if (!this.bardata | !this.dateType) return null;
+    //   //console.log(this.bardata);
+    //   return this.bardata;
+    // }
   },
   methods: {
     sendApi() {
-      let url = `0050${this.dateType_en(this.dateType)}.json`;
+      let url = `_0123${this.dateType_en(this.dateType)}.json`;
       //console.log(url);
       this.axios.get(url).then(
         response => {
           //console.log(response.data);
           //linedata here
           let dataArr = [];
-          let obj = {};
-          obj.names = response.data[0]["證券名稱"];
-          obj.values = [];
           for (let i in response.data) {
-            let o = {};
-            let newDate = new Date();
-            newDate.setTime(response.data[i]["標借日期"]);
-
-            o.date = newDate.toString();
-            //console.log(o.date);
-            o.price = response.data[i]["最高標借單價"];
-            obj.values.push(o);
+            let obj = {};
+            obj.name = response.data[i][0]["證券名稱"];
+            obj.values = [];
+            for (let j in response.data[i]) {
+              //如果最高標借單價是null, 就不要用那筆資料, 直接skip
+              if (response.data[i][j]["最高標借單價"] != null) {
+                let o = {};
+                let newDate = new Date();
+                newDate.setTime(response.data[i][j]["標借日期"]);
+                o.date = newDate.toString();
+                o.price = response.data[i][j]["最高標借單價"];
+                obj.values.push(o);
+              }
+            }
+            dataArr.push(obj);
           }
-          dataArr.push(obj);
-          //console.log(dataArr);
+
+          console.log(dataArr);
           this.data = dataArr;
 
-          //bardata here
-          let barObj = {};
-          barObj.name = [];
-          barObj.date = [];
-          barObj.value = [];
-          barObj.value.push([]);
-          barObj.name.push(response.data[0]["證券名稱"]);
-          for (let i in response.data) {
-            let newDate = new Date();
-            newDate.setTime(response.data[i]["標借日期"]);
-            barObj.date.push(newDate.toString());
-            barObj.value[0].push(response.data[i]["最高標借單價"]);
-          }
-          //console.log(barObj);
-          this.bardata = barObj;
+          // //bardata here
+          // let barObj = {};
+          // barObj.name = [];
+          // barObj.date = [];
+          // barObj.value = [];
+          // barObj.value.push([]);
+          // barObj.name.push(response.data[0]["證券名稱"]);
+          // for (let i in response.data) {
+          //   let newDate = new Date();
+          //   newDate.setTime(response.data[i]["標借日期"]);
+          //   barObj.date.push(newDate.toString());
+          //   barObj.value[0].push(response.data[i]["最高標借單價"]);
+          // }
+          // //console.log(barObj);
+          // this.bardata = barObj;
         },
         error => {
           //console.log("error msg:", error);
