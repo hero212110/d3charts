@@ -5,6 +5,10 @@
         <HistogramChart :data="histogramchartdata" :dateType="dateType"></HistogramChart>
       </div>
 
+      <div v-if="barchartdata">
+        <BarChart :data="barchartdata" :dateType="dateType"></BarChart>
+      </div>
+
       <div v-if="chartdata">
         <LineChart :data="chartdata" :dateType="dateType"></LineChart>
       </div>
@@ -18,11 +22,13 @@
 //import * as d3 from "d3";
 import LineChart from "@/components/LineChart";
 import HistogramChart from "@/components/HistogramChart";
+import BarChart from "@/components/BarChart";
 export default {
-  components: { LineChart, HistogramChart },
+  components: { LineChart, HistogramChart, BarChart },
   data: function() {
     return {
       data: null,
+      bardata: null,
       histogramdata: null,
       box: null,
       dateTypeArr: ["年", "月", "日"],
@@ -47,6 +53,10 @@ export default {
       if (!this.histogramdata | !this.dateType) return null;
       //console.log(this.histogramdata);
       return this.histogramdata;
+    },
+    barchartdata() {
+      if (!this.bardata | !this.dateType) return null;
+      return this.bardata;
     }
   },
   methods: {
@@ -55,7 +65,7 @@ export default {
       //console.log(url);
       this.axios.get(url).then(
         response => {
-          //console.log(response.data);
+          console.log(response.data);
           //linedata here
           let dataArr = [];
           for (let i in response.data) {
@@ -77,6 +87,30 @@ export default {
           }
           //console.log(dataArr);
           this.data = dataArr;
+
+          //bardata
+          let barObj = {};
+          barObj.name = [];
+          barObj.date = [];
+          barObj.value = [];
+          for (let i in response.data) {
+            barObj.name.push(response.data[i][0]["證券名稱"]);
+            let tmpDate = [];
+            let tmpValue = [];
+            for (let j in response.data[i]) {
+              let newDate = new Date();
+              newDate.setTime(response.data[i][j]["標借日期"]);
+              tmpDate.push(newDate.toString());
+
+              response.data[i][j]["最高標借單價"] == null ? tmpValue.push(0) : tmpValue.push(response.data[i][j]["最高標借單價"]);
+
+              // tmpValue.push(response.data[i][j]["最高標借單價"]);
+            }
+            barObj.date.push(tmpDate);
+            barObj.value.push(tmpValue);
+          }
+          console.log(barObj);
+          this.bardata = barObj;
         },
         error => {
           //console.log("error msg:", error);
