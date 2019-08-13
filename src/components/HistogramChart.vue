@@ -14,20 +14,26 @@ export default {
   props: ["data", "dateType"],
   mounted() {
     this.drawChart();
+    //console.log(this.data);
   },
   methods: {
     drawChart() {
-      //   let data = {
-      //     name: ["a", "b", "c"],
-      //     date: [2013, 2014, 2015, 2016, 2017, 2018, 2019],
-      //     value: [
-      //       [1, 2, 3, 4, 5, 6, 7],
-      //       [6, 7, 8, 9, 1, 6, 7],
-      //       [11, 12, 13, 14, 15, 7, 8]
-      //     ]
-      //   };
+      // let data = {
+      //   name: ["a", "b", "c"],
+      //   date: [2013, 2014, 2015, 2016, 2017, 2018, 2019],
+      //   // value: [
+      //   //   [1, 2, 3, 4, 5, 6, 7],
+      //   //   [6, 7, 8, 9, 1, 6, 7],
+      //   //   [11, 12, 13, 14, 15, 7, 8]
+      //   // ]
+      //   value: [
+      //     [4, 5, 6, 7, 6, 4, 6]
+      //   ]
+      // };
       d3.select("svg#bar").html("");
       let data = this.data;
+
+      console.log(data);
 
       let tmp = this.dateFormat(this.dateType);
       var formatDate = d3.timeFormat(tmp);
@@ -44,16 +50,22 @@ export default {
           data.value[i].reverse();
         }
       }
+      //console.log((parseInt(data.date[data.date.length - 1]) + 1).toString());
 
-      //console.log(data);
+      data.date.push(
+        (parseInt(data.date[data.date.length - 1]) + 1).toString()
+      );
+
+      // console.log(data);
       //將陣列扁平化
       let flatValue = [].concat(...data.value);
+      //console.log(flatValue);
       var margin = { top: 20, right: 30, bottom: 30, left: 40 },
         width = 350 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
       var y = d3
         .scaleLinear()
-        .domain([d3.min(flatValue)*0.9, d3.max(flatValue)])
+        .domain([d3.min(flatValue) * 0.9, d3.max(flatValue)])
         .range([0, height]);
       var x0 = d3
         .scaleBand()
@@ -62,7 +74,7 @@ export default {
       var x1 = d3
         .scaleBand()
         .domain(d3.range(data.value.length))
-        .range([0, x0.bandwidth() - 10]);
+        .range([0, x0.bandwidth() - 0.2]);
       let z = d3.scaleOrdinal(d3.schemeCategory10);
       var xScale = d3
         //.scaleTime()
@@ -71,9 +83,9 @@ export default {
         .range([0, width]);
       var yScale = d3
         .scaleLinear()
-        .domain([d3.min(flatValue)*0.9, d3.max(flatValue)])
+        .domain([d3.min(flatValue) * 0.9, d3.max(flatValue)])
         .range([height, 0]);
-      var xAxis = d3.axisBottom(xScale).ticks(5);
+      var xAxis = d3.axisBottom(xScale).ticks(data.date.length);
       var yAxis = d3.axisLeft(yScale).ticks(3);
       var svg = d3
         .select("svg#bar")

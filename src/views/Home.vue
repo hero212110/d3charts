@@ -1,11 +1,9 @@
 <template>
   <div>
     <div style="width:100%;background-color:white">
-      <!-- <div v-if="barchartdata">
-      <BarChart :data="barchartdata" :dateType="dateType"></BarChart>
-      </div>-->
-
-      <!-- <BarChart></BarChart> -->
+      <div v-if="histogramchartdata">
+        <HistogramChart :data="histogramchartdata" :dateType="dateType"></HistogramChart>
+      </div>
 
       <div v-if="chartdata">
         <LineChart :data="chartdata" :dateType="dateType"></LineChart>
@@ -18,38 +16,42 @@
 
 <script>
 //import * as d3 from "d3";
-import LineChart from "../components/LineChart";
-import BarChart from "../components/BarChart";
+import LineChart from "@/components/LineChart";
+import HistogramChart from "@/components/HistogramChart";
 export default {
-  components: { LineChart, BarChart },
+  components: { LineChart, HistogramChart },
   data: function() {
     return {
       data: null,
-      bardata: null,
+      histogramdata: null,
       box: null,
       dateTypeArr: ["年", "月", "日"],
       dateType: null
     };
   },
   mounted() {
+    //用require讀取本地json檔, 檔案必須放在src資料夾下,檔通常放置在assets資料夾內
+    // let a = require("@/assets/0050day.json");
+    // console.log(a);
     this.dateType = "年";
     this.sendApi();
+    this.sendApi2();
   },
   computed: {
     chartdata() {
       if (!this.data | !this.dateType) return null;
       //console.log(this.data);
       return this.data;
+    },
+    histogramchartdata() {
+      if (!this.histogramdata | !this.dateType) return null;
+      //console.log(this.histogramdata);
+      return this.histogramdata;
     }
-    // barchartdata() {
-    //   if (!this.bardata | !this.dateType) return null;
-    //   //console.log(this.bardata);
-    //   return this.bardata;
-    // }
   },
   methods: {
     sendApi() {
-      let url = `_0123${this.dateType_en(this.dateType)}.json`;
+      let url = `0123${this.dateType_en(this.dateType)}.json`;
       //console.log(url);
       this.axios.get(url).then(
         response => {
@@ -73,25 +75,8 @@ export default {
             }
             dataArr.push(obj);
           }
-
           //console.log(dataArr);
           this.data = dataArr;
-
-          // //bardata here
-          // let barObj = {};
-          // barObj.name = [];
-          // barObj.date = [];
-          // barObj.value = [];
-          // barObj.value.push([]);
-          // barObj.name.push(response.data[0]["證券名稱"]);
-          // for (let i in response.data) {
-          //   let newDate = new Date();
-          //   newDate.setTime(response.data[i]["標借日期"]);
-          //   barObj.date.push(newDate.toString());
-          //   barObj.value[0].push(response.data[i]["最高標借單價"]);
-          // }
-          // //console.log(barObj);
-          // this.bardata = barObj;
         },
         error => {
           //console.log("error msg:", error);
@@ -101,6 +86,27 @@ export default {
           }
         }
       );
+    },
+    sendApi2() {
+      let url = `0050${this.dateType_en(this.dateType)}.json`;
+      this.axios.get(url).then(response => {
+        //console.log(response.data);
+        //histogramdata here
+        let hisObj = {};
+        hisObj.name = [];
+        hisObj.date = [];
+        hisObj.value = [];
+        hisObj.value.push([]);
+        hisObj.name.push(response.data[0]["證券名稱"]);
+        for (let i in response.data) {
+          let newDate = new Date();
+          newDate.setTime(response.data[i]["標借日期"]);
+          hisObj.date.push(newDate.toString());
+          hisObj.value[0].push(response.data[i]["最高標借單價"]);
+        }
+        //console.log(hisObj);
+        this.histogramdata = hisObj;
+      });
     },
     dateType_en(value) {
       let en = ["year", "month", "day"];
@@ -117,8 +123,9 @@ export default {
       //console.log(value);
       if (!this.data | !value) return null;
       this.sendApi();
+      if (!this.histogramdata | !value) return null;
+      this.sendApi2();
     }
   }
 };
 </script>
-
