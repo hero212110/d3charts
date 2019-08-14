@@ -61,11 +61,11 @@ export default {
   },
   methods: {
     sendApi() {
-      let url = `0123${this.dateType_en(this.dateType)}.json`;
+      let url = `_0123${this.dateType_en(this.dateType)}.json`;
       //console.log(url);
       this.axios.get(url).then(
         response => {
-          console.log(response.data);
+          //console.log(response.data);
           //linedata here
           let dataArr = [];
           for (let i in response.data) {
@@ -109,7 +109,7 @@ export default {
             barObj.date.push(tmpDate);
             barObj.value.push(tmpValue);
           }
-          console.log(barObj);
+          //console.log(barObj);
           this.bardata = barObj;
         },
         error => {
@@ -136,7 +136,10 @@ export default {
           let newDate = new Date();
           newDate.setTime(response.data[i]["標借日期"]);
           hisObj.date.push(newDate.toString());
-          hisObj.value[0].push(response.data[i]["最高標借單價"]);
+
+          response.data[i]["最高標借單價"] == null ?  hisObj.value[0].push(0) :  hisObj.value[0].push(response.data[i]["最高標借單價"])
+
+          //hisObj.value[0].push(response.data[i]["最高標借單價"]);
         }
         //console.log(hisObj);
         this.histogramdata = hisObj;

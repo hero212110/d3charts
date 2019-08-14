@@ -14,7 +14,7 @@ export default {
   props: ["data", "dateType"],
   mounted() {
     this.drawChart();
-    console.log(this.data)
+    //console.log(this.data)
   },
   methods: {
     drawChart() {

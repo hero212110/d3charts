@@ -51,6 +51,8 @@ export default {
         (parseInt(data.date[data.date.length - 1]) + 1).toString()
       );
 
+      console.log(data.date);
+
       // console.log(data);
       //將陣列扁平化
       let flatValue = [].concat(...data.value);
@@ -64,6 +66,7 @@ export default {
         .range([0, height]);
       var x0 = d3
         .scaleBand()
+        // .domain(d3.range(data.value[0].length))
         .domain(d3.range(data.value[0].length))
         .range([0, width], 0.2);
       var x1 = d3
@@ -75,6 +78,8 @@ export default {
         //.scaleTime()
         .scaleLinear()
         .domain([d3.min(data.date), d3.max(data.date)])
+        // .scaleBand()
+        // .domain(data.date)
         .range([0, width]);
       var yScale = d3
         .scaleLinear()

@@ -47,13 +47,24 @@ export default {
       var formatDate = d3.timeFormat(tmp);
       //var parseDate = d3.timeParse(tmp);
 
+      let tmpDate = [];
+
       data.forEach(function(d) {
         d.values.forEach(function(d) {
           let date = new Date(d.date);
           d.date = formatDate(date);
           //d.date = parseDate(d.date);
+          console.log(d.date)
+          tmpDate.push(d.date);
         });
       });
+
+      //去除陣列中重複元素
+      let flatDate = tmpDate.filter(function(element,index,arr){
+        return arr.indexOf(element) === index;
+      })
+      flatDate = flatDate.sort();
+      console.log(flatDate)
 
       let tmpPrice = [];
       for (let i in data) {
@@ -62,12 +73,15 @@ export default {
           tmpPrice.push(data[i].values[j].price);
         }
       }
-      //console.log(data);
+      console.log(data);
       /* Scale */
       var xScale = d3
         //.scaleTime()
-        .scaleLinear()
-        .domain(d3.extent(data[0].values, d => d.date))
+        // .scaleLinear()
+        // .domain(d3.extent(data[0].values, d => d.date))
+        .scaleBand()
+        // .domain([2013,2014,2015,2016,2017,2018,2019])
+        .domain(flatDate)
         .range([0, width - margin]);
 
       var yScale = d3
@@ -95,7 +109,7 @@ export default {
         .defined(function(d){
           return d.price != null;
         })
-        .x(d => xScale(d.date))
+        .x(d => xScale(d.date)+ (width-margin)/10-10)
         .y(d => yScale(d.price));
 
       let lines = svg.append("g").attr("class", "lines");
@@ -170,7 +184,7 @@ export default {
             .remove();
         })
         .append("circle")
-        .attr("cx", d => xScale(d.date))
+        .attr("cx", d => xScale(d.date)+(width-margin)/10-10)
         .attr("cy", d => yScale(d.price))
         .attr("r", circleRadius)
         .style("opacity", circleOpacity)
