@@ -54,7 +54,7 @@ export default {
           let date = new Date(d.date);
           d.date = formatDate(date);
           //d.date = parseDate(d.date);
-          console.log(d.date)
+          //console.log(d.date)
           tmpDate.push(d.date);
         });
       });
@@ -64,7 +64,7 @@ export default {
         return arr.indexOf(element) === index;
       })
       flatDate = flatDate.sort();
-      console.log(flatDate)
+      //console.log(flatDate)
 
       let tmpPrice = [];
       for (let i in data) {
@@ -73,7 +73,7 @@ export default {
           tmpPrice.push(data[i].values[j].price);
         }
       }
-      console.log(data);
+      //console.log(data);
       /* Scale */
       var xScale = d3
         //.scaleTime()

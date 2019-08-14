@@ -35,7 +35,7 @@ export default {
       for (let i in data.date) {
         //console.log(data.date[i]);
         let date = new Date(data.date[i]);
-        data.date[i] = formatDate(date);
+        data.date[i] = parseInt(formatDate(date));
       }
 
       //如果日期是由大到小 就reverse 變成 由小到大
@@ -47,11 +47,19 @@ export default {
       }
       //console.log((parseInt(data.date[data.date.length - 1]) + 1).toString());
 
-      data.date.push(
-        (parseInt(data.date[data.date.length - 1]) + 1).toString()
-      );
+      //檢查date 是否為連續 , 如果不連續date就補上對應日期 , value就補0
+      for (let i = 0; i < data.date.length - 1; i++) {
+        if (data.date[i] - data.date[i + 1] < -1) {
+          data.date.splice(i + 1, 0, data.date[i] + 1);
+          data.value[0].splice(i + 1, 0, 0);
+        }
+      }
 
-      console.log(data.date);
+      //histogram 包左不包右 所以要補一個右邊的刻度
+      data.date.push(
+        // (parseInt(data.date[data.date.length - 1]) + 1).toString()
+        parseInt(data.date[data.date.length - 1]) + 1
+      );
 
       // console.log(data);
       //將陣列扁平化
