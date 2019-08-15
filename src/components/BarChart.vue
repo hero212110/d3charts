@@ -1,5 +1,5 @@
 <template>
-  <div id="barchart">
+  <div :ref="id" id="barchart">
     <svg id="bar" style="background-color:azure" />
   </div>
 </template>
@@ -9,50 +9,69 @@
 import * as d3 from "d3";
 export default {
   data() {
-    return {};
+    return {
+      id: "",
+      el: null
+    };
   },
   props: ["data", "dateType"],
   mounted() {
+    this.el = d3.select(this.$refs[this.id]);
+    console.log(d3.select(this.$refs[this.id]));
     this.drawChart();
     //console.log(this.data)
   },
   methods: {
     drawChart() {
-        // let data = {
-        //   name: ["a", "b", "c"],
-        //   date: [2013, 2014, 2015, 2016, 2017, 2018, 2019],
-        //   value: [
-        //     [1, 2, 3, 4, 5, 6, 7],
-        //     [6, 7, 8, 9, 1, 6, 7],
-        //     [11, 12, 13, 14, 15, 7, 8]
-        //   ]
-        // };
+      // let data = {
+      //   name: ["a", "b", "c"],
+      //   date: [2013, 2014, 2015, 2016, 2017, 2018, 2019],
+      //   value: [
+      //     [1, 2, 3, 4, 5, 6, 7],
+      //     [6, 7, 8, 9, 1, 6, 7],
+      //     [11, 12, 13, 14, 15, 7, 8]
+      //   ]
+      // };
       d3.select("svg#bar").html("");
+      //this.el.html("");
+      //this.el.append('div')
       let data = this.data;
-      
-      data.date = [2019, 2018, 2017, 2016, 2015, 2014, 2013];
-      // let tmp = this.dateFormat(this.dateType);
-      // var formatDate = d3.timeFormat(tmp);
 
-      // let flatDate = [].concat(...data.date);
+      //data.date = [2019, 2018, 2017, 2016, 2015, 2014, 2013];
+      let tmp = this.dateFormat(this.dateType);
+      var formatDate = d3.timeFormat(tmp);
 
-      // for(let i in flatDate){
-
-      // }
-      // console.log(d3.extent([2,7,5,9,4,2]))
-      // for (let i in data.date) {
-      //   //console.log(data.date[i]);
-      //   let date = new Date(data.date[i]);
-      //   data.date[i] = formatDate(date);
-      // }
-      //如果日期是由大到小 就reverse 變成 由小到大
-      if (data.date[0] > data.date[1]) {
-        data.date.reverse();
-        for (let i in data.value) {
+      for (let i in data.date) {
+        for (let j in data.date[i]) {
+          let date = new Date(data.date[i][j]);
+          data.date[i][j] = parseInt(formatDate(date));
+        }
+        if (data.date[i][0] > data.date[i][1]) {
+          data.date[i].reverse();
           data.value[i].reverse();
         }
       }
-      //console.log(data);
+
+      let tmpDate = [].concat(...data.date);
+
+      //去除陣列中重複元素
+      let flatDate = tmpDate.filter(function(element, index, arr) {
+        return arr.indexOf(element) === index;
+      });
+      flatDate = flatDate.sort();
+      console.log(flatDate);
+
+      //date補上 , value補0
+      for (let i in flatDate) {
+        for (let j in data.date) {
+          if (flatDate[i] != data.date[j][i]) {
+            data.date[j].splice(i,0,flatDate[i]);
+            data.value[j].splice(i,0,0);
+          }
+        }
+      }
+
+      console.log(data);
       //將陣列扁平化
       let flatValue = [].concat(...data.value);
       var margin = { top: 20, right: 30, bottom: 30, left: 40 },
@@ -60,7 +79,7 @@ export default {
         height = 300 - margin.top - margin.bottom;
       var y = d3
         .scaleLinear()
-        .domain([d3.min(flatValue)*0.9, d3.max(flatValue)])
+        .domain([d3.min(flatValue) * 0.9, d3.max(flatValue)])
         .range([0, height]);
       var x0 = d3
         .scaleBand()
@@ -76,11 +95,12 @@ export default {
         // .scaleLinear()
         // .domain([d3.min(data.date), d3.max(data.date)])
         .scaleBand()
-        .domain(data.date)
+        // .domain(data.date)
+        .domain(flatDate)
         .range([0, width]);
       var yScale = d3
         .scaleLinear()
-        .domain([d3.min(flatValue)*0.9, d3.max(flatValue)])
+        .domain([d3.min(flatValue) * 0.9, d3.max(flatValue)])
         .range([height, 0]);
       var xAxis = d3.axisBottom(xScale).ticks(5);
       var yAxis = d3.axisLeft(yScale).ticks(3);

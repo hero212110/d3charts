@@ -5,9 +5,9 @@
         <HistogramChart :data="histogramchartdata" :dateType="dateType"></HistogramChart>
       </div>
 
-      <!-- <div v-if="barchartdata">
+      <div v-if="barchartdata">
         <BarChart :data="barchartdata" :dateType="dateType"></BarChart>
-      </div> -->
+      </div>
 
       <div v-if="chartdata">
         <LineChart :data="chartdata" :dateType="dateType"></LineChart>
@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     sendApi() {
-      let url = `0123${this.dateType_en(this.dateType)}.json`;
+      let url = `_0123${this.dateType_en(this.dateType)}.json`;
       //console.log(url);
       this.axios.get(url).then(
         response => {

@@ -28,7 +28,7 @@ export default {
       d3.select("svg#histogram").html("");
       let data = this.data;
 
-      console.log(data);
+      //console.log(data);
 
       let tmp = this.dateFormat(this.dateType);
       var formatDate = d3.timeFormat(tmp);
