@@ -6,7 +6,8 @@
       </div>
 
       <div v-if="barchartdata">
-        <BarChart :data="barchartdata" :dateType="dateType"></BarChart>
+        <BarChart :data="barchartdata" :dateType="dateType" ></BarChart>
+        <BarChart :data="barchartdata2" :dateType="dateType" ></BarChart>
       </div>
 
       <div v-if="chartdata">
@@ -29,6 +30,7 @@ export default {
     return {
       data: null,
       bardata: null,
+      bardata2: null,
       histogramdata: null,
       box: null,
       dateTypeArr: ["年", "月", "日"],
@@ -57,6 +59,10 @@ export default {
     barchartdata() {
       if (!this.bardata | !this.dateType) return null;
       return this.bardata;
+    },
+    barchartdata2() {
+      if (!this.bardata2 | !this.dateType) return null;
+      return this.bardata2;
     }
   },
   methods: {
@@ -111,6 +117,7 @@ export default {
           }
           //console.log(barObj);
           this.bardata = barObj;
+          this.bardata2 = barObj;
         },
         error => {
           //console.log("error msg:", error);

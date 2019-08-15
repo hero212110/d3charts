@@ -1,25 +1,19 @@
 <template>
-  <div :ref="id" id="barchart">
-    <svg id="bar" style="background-color:azure" />
+  <div>
+    <svg :ref="id" style="background-color:azure" />
   </div>
 </template>
-
 
 <script>
 import * as d3 from "d3";
 export default {
-  data() {
-    return {
-      id: "",
-      el: null
-    };
-  },
+  data:()=>({ id:""}),
   props: ["data", "dateType"],
+
   mounted() {
-    this.el = d3.select(this.$refs[this.id]);
-    console.log(d3.select(this.$refs[this.id]));
+    //this.el = d3.select(this.$refs[this.id]);
+    //console.log(d3.select(this.$refs[this.id]));
     this.drawChart();
-    //console.log(this.data)
   },
   methods: {
     drawChart() {
@@ -32,15 +26,15 @@ export default {
       //     [11, 12, 13, 14, 15, 7, 8]
       //   ]
       // };
-      d3.select("svg#bar").html("");
+      //d3.select("svg#bar").html("");
       //this.el.html("");
       //this.el.append('div')
-      let data = this.data;
+      d3.select(this.$refs[this.id]).html("")
+      let data = Object.assign({},this.data)
 
       //data.date = [2019, 2018, 2017, 2016, 2015, 2014, 2013];
       let tmp = this.dateFormat(this.dateType);
       var formatDate = d3.timeFormat(tmp);
-
       for (let i in data.date) {
         for (let j in data.date[i]) {
           let date = new Date(data.date[i][j]);
@@ -51,15 +45,12 @@ export default {
           data.value[i].reverse();
         }
       }
-
       let tmpDate = [].concat(...data.date);
-
       //去除陣列中重複元素
       let flatDate = tmpDate.filter(function(element, index, arr) {
         return arr.indexOf(element) === index;
       });
       flatDate = flatDate.sort();
-      console.log(flatDate);
 
       //date補上 , value補0
       for (let i in flatDate) {
@@ -71,7 +62,6 @@ export default {
         }
       }
 
-      console.log(data);
       //將陣列扁平化
       let flatValue = [].concat(...data.value);
       var margin = { top: 20, right: 30, bottom: 30, left: 40 },
@@ -105,7 +95,8 @@ export default {
       var xAxis = d3.axisBottom(xScale).ticks(5);
       var yAxis = d3.axisLeft(yScale).ticks(3);
       var svg = d3
-        .select("svg#bar")
+        .select(this.$refs[this.id])
+        //.select("svg#bar")
         //.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -167,7 +158,7 @@ export default {
     }
   },
   watch: {
-    data: "drawChart"
+    data:"drawChart"
   }
 };
 </script>
