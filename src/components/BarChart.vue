@@ -11,8 +11,6 @@ export default {
   props: ["data", "dateType"],
 
   mounted() {
-    //this.el = d3.select(this.$refs[this.id]);
-    //console.log(d3.select(this.$refs[this.id]));
     this.drawChart();
   },
   methods: {
@@ -26,9 +24,6 @@ export default {
       //     [11, 12, 13, 14, 15, 7, 8]
       //   ]
       // };
-      //d3.select("svg#bar").html("");
-      //this.el.html("");
-      //this.el.append('div')
       d3.select(this.$refs[this.id]).html("")
       let data = Object.assign({},this.data)
 
@@ -38,7 +33,8 @@ export default {
       for (let i in data.date) {
         for (let j in data.date[i]) {
           let date = new Date(data.date[i][j]);
-          data.date[i][j] = parseInt(formatDate(date));
+          //data.date[i][j] = parseInt(formatDate(date));
+          data.date[i][j] = formatDate(date);
         }
         if (data.date[i][0] > data.date[i][1]) {
           data.date[i].reverse();
@@ -62,6 +58,8 @@ export default {
         }
       }
 
+      //console.log(data)
+
       //將陣列扁平化
       let flatValue = [].concat(...data.value);
       var margin = { top: 20, right: 30, bottom: 30, left: 40 },
@@ -81,11 +79,7 @@ export default {
         .range([0, x0.bandwidth() - 10]);
       let z = d3.scaleOrdinal(d3.schemeCategory10);
       var xScale = d3
-        //.scaleTime()
-        // .scaleLinear()
-        // .domain([d3.min(data.date), d3.max(data.date)])
         .scaleBand()
-        // .domain(data.date)
         .domain(flatDate)
         .range([0, width]);
       var yScale = d3
@@ -96,8 +90,6 @@ export default {
       var yAxis = d3.axisLeft(yScale).ticks(3);
       var svg = d3
         .select(this.$refs[this.id])
-        //.select("svg#bar")
-        //.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")

@@ -3,14 +3,19 @@
     <div style="width:100%;background-color:white">
       <div v-if="histogramchartdata">
         <HistogramChart :data="histogramchartdata" :dateType="dateType"></HistogramChart>
+        <HistogramChart :data="histogramchartdata" :dateType="dateType"></HistogramChart>
+        <HistogramChart :data="histogramchartdata" :dateType="dateType"></HistogramChart>
       </div>
 
       <div v-if="barchartdata">
         <BarChart :data="barchartdata" :dateType="dateType" ></BarChart>
-        <BarChart :data="barchartdata2" :dateType="dateType" ></BarChart>
+        <BarChart :data="barchartdata" :dateType="dateType" ></BarChart>
+        <BarChart :data="barchartdata" :dateType="dateType" ></BarChart>
       </div>
 
       <div v-if="chartdata">
+        <LineChart :data="chartdata" :dateType="dateType"></LineChart>
+        <LineChart :data="chartdata" :dateType="dateType"></LineChart>
         <LineChart :data="chartdata" :dateType="dateType"></LineChart>
       </div>
 

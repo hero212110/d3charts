@@ -1,6 +1,6 @@
 <template>
-  <div id="chart">
-    <svg id="line" style="background-color:whitesmoke" />
+  <div>
+    <svg :ref="id" style="background-color:whitesmoke" />
   </div>
 </template>
 
@@ -10,7 +10,9 @@ export default {
   props: ["data", "dateType"],
 
   data() {
-    return {};
+    return {
+      id: ""
+    };
   },
 
   mounted() {
@@ -20,7 +22,7 @@ export default {
 
   methods: {
     drawChart() {
-      d3.select("svg#line").html("");
+      d3.select(this.$refs[this.id]).html("");
       var width = 350;
       var height = 300;
       var margin = 50;
@@ -60,9 +62,9 @@ export default {
       });
 
       //去除陣列中重複元素
-      let flatDate = tmpDate.filter(function(element,index,arr){
+      let flatDate = tmpDate.filter(function(element, index, arr) {
         return arr.indexOf(element) === index;
-      })
+      });
       flatDate = flatDate.sort();
       //console.log(flatDate)
 
@@ -95,8 +97,9 @@ export default {
 
       /* Add SVG */
       var svg = d3
+        .select(this.$refs[this.id])
         //.append("svg")
-        .select("svg#line")
+        // .select("svg#line")
         .attr("width", width + margin + "px")
         .attr("height", height + margin + "px")
         .append("g")
@@ -106,10 +109,10 @@ export default {
       var line = d3
         .line()
         //用defined 傳回非null的值 ****這邊不用做也沒差 , 直接在父組件那邊skip掉null值就好
-        .defined(function(d){
+        .defined(function(d) {
           return d.price != null;
         })
-        .x(d => xScale(d.date)+ (width-margin)/10-10)
+        .x(d => xScale(d.date) + (width - margin) / 10 - 10)
         .y(d => yScale(d.price));
 
       let lines = svg.append("g").attr("class", "lines");
@@ -184,7 +187,7 @@ export default {
             .remove();
         })
         .append("circle")
-        .attr("cx", d => xScale(d.date)+(width-margin)/10-10)
+        .attr("cx", d => xScale(d.date) + (width - margin) / 10 - 10)
         .attr("cy", d => yScale(d.price))
         .attr("r", circleRadius)
         .style("opacity", circleOpacity)
@@ -238,8 +241,8 @@ export default {
         .attr("y", -30)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        //.text(`${this.data[0].name}`);
+        .style("text-decoration", "underline");
+      //.text(`${this.data[0].name}`);
     },
     dateFormat(value) {
       let cn = ["日", "月", "年"];

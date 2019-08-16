@@ -1,6 +1,6 @@
 <template>
-  <div id="histogramchart">
-    <svg id="histogram" style="background-color:azure" />
+  <div>
+    <svg :ref="id" style="background-color:azure" />
   </div>
 </template>
 
@@ -9,12 +9,14 @@
 import * as d3 from "d3";
 export default {
   data() {
-    return {};
+    return {
+      id: ""
+    };
   },
   props: ["data", "dateType"],
   mounted() {
+    //console.log(this.data.date)
     this.drawChart();
-    //console.log(this.data);
   },
   methods: {
     drawChart() {
@@ -25,43 +27,37 @@ export default {
       //     [4, 5, 6, 7, 6, 4, 6]
       //   ]
       // };
-      d3.select("svg#histogram").html("");
+      d3.select(this.$refs[this.id]).html("");
       let data = this.data;
-
-      //console.log(data);
-
+      //console.log(data.date);
       let tmp = this.dateFormat(this.dateType);
       var formatDate = d3.timeFormat(tmp);
       for (let i in data.date) {
         //console.log(data.date[i]);
         let date = new Date(data.date[i]);
-        data.date[i] = parseInt(formatDate(date));
+        // data.date[i] = parseInt(formatDate(date));
+        data.date[i] = formatDate(date);
       }
 
       //如果日期是由大到小 就reverse 變成 由小到大
-      if (data.date[0] > data.date[1]) {
+      if (parseInt(data.date[0]) > parseInt(data.date[1])) {
         data.date.reverse();
         for (let i in data.value) {
           data.value[i].reverse();
         }
       }
-      //console.log((parseInt(data.date[data.date.length - 1]) + 1).toString());
+      //console.log(data.date)
 
       //檢查date 是否為連續 , 如果不連續date就補上對應日期 , value就補0
       for (let i = 0; i < data.date.length - 1; i++) {
-        if (data.date[i] - data.date[i + 1] < -1) {
-          data.date.splice(i + 1, 0, data.date[i] + 1);
+        if (parseInt(data.date[i]) - parseInt(data.date[i + 1]) < -1) {
+          data.date.splice(i + 1, 0, (parseInt(data.date[i]) + 1).toString());
           data.value[0].splice(i + 1, 0, 0);
         }
       }
 
-      //histogram 包左不包右 所以要補一個右邊的刻度
-      data.date.push(
-        // (parseInt(data.date[data.date.length - 1]) + 1).toString()
-        parseInt(data.date[data.date.length - 1]) + 1
-      );
-
-      // console.log(data);
+      // console.log((parseInt(d3.max(data.date))+1).toString())
+      // console.log(data.date);
       //將陣列扁平化
       let flatValue = [].concat(...data.value);
       //console.log(flatValue);
@@ -85,7 +81,10 @@ export default {
       var xScale = d3
         //.scaleTime()
         .scaleLinear()
-        .domain([d3.min(data.date), d3.max(data.date)])
+        .domain([
+          d3.min(data.date),
+          (parseInt(d3.max(data.date)) + 1).toString()
+        ])
         // .scaleBand()
         // .domain(data.date)
         .range([0, width]);
@@ -96,8 +95,7 @@ export default {
       var xAxis = d3.axisBottom(xScale).ticks(data.date.length);
       var yAxis = d3.axisLeft(yScale).ticks(3);
       var svg = d3
-        .select("svg#histogram")
-        //.append("svg")
+        .select(this.$refs[this.id])
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
