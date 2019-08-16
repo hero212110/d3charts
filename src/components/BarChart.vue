@@ -1,13 +1,15 @@
 <template>
   <div>
-    <svg :ref="id" style="background-color:azure" />
+    <svg :ref="id" style="background-color:mintcream" />
   </div>
 </template>
 
 <script>
 import * as d3 from "d3";
+import Axis from "@/js/Axis";
+import date_CNtoEN from "@/js/date_CNtoEN";
 export default {
-  data:()=>({ id:""}),
+  data: () => ({ id: "" }),
   props: ["data", "dateType"],
 
   mounted() {
@@ -24,11 +26,11 @@ export default {
       //     [11, 12, 13, 14, 15, 7, 8]
       //   ]
       // };
-      d3.select(this.$refs[this.id]).html("")
-      let data = Object.assign({},this.data)
-
       //data.date = [2019, 2018, 2017, 2016, 2015, 2014, 2013];
-      let tmp = this.dateFormat(this.dateType);
+      d3.select(this.$refs[this.id]).html("");
+      let data = Object.assign({}, this.data);
+  
+      let tmp = date_CNtoEN(this.dateType);
       var formatDate = d3.timeFormat(tmp);
       for (let i in data.date) {
         for (let j in data.date[i]) {
@@ -52,12 +54,11 @@ export default {
       for (let i in flatDate) {
         for (let j in data.date) {
           if (flatDate[i] != data.date[j][i]) {
-            data.date[j].splice(i,0,flatDate[i]);
-            data.value[j].splice(i,0,0);
+            data.date[j].splice(i, 0, flatDate[i]);
+            data.value[j].splice(i, 0, 0);
           }
         }
       }
-
       //console.log(data)
 
       //將陣列扁平化
@@ -86,8 +87,7 @@ export default {
         .scaleLinear()
         .domain([d3.min(flatValue) * 0.9, d3.max(flatValue)])
         .range([height, 0]);
-      var xAxis = d3.axisBottom(xScale).ticks(5);
-      var yAxis = d3.axisLeft(yScale).ticks(3);
+    
       var svg = d3
         .select(this.$refs[this.id])
         .attr("width", width + margin.left + margin.right)
@@ -96,6 +96,9 @@ export default {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       svg
         .append("g")
+        .attr("transform", function() {
+          return "translate(5,0)";
+        })
         .selectAll("g")
         .data(data.value)
         .enter()
@@ -120,37 +123,14 @@ export default {
         .attr("y", function(d) {
           return height - y(d);
         });
-      //x軸
-      svg
-        .append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0, ${height})`)
-        .call(xAxis);
-      //y軸
-      svg
-        .append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("y", -5)
-        .attr("x", -5)
-        .attr("transform", "rotate(0)")
-        .attr("fill", "#000")
-        .text("單價");
-    },
-    dateFormat(value) {
-      let cn = ["日", "月", "年"];
-      let en = ["%d", "%m", "%Y"];
-      let tmp = "";
-      for (let i in cn) {
-        value == cn[i] ? (tmp = en[i]) : "";
-        //tmp = (value == cn[i]) ? en[i] : tmp;
-      }
-      return tmp;
+
+      //用import進來的Axis函數 畫出x,y軸
+      Axis(xScale, yScale, svg, height, 0);
+  
     }
   },
   watch: {
-    data:"drawChart"
+    data: "drawChart"
   }
 };
 </script>

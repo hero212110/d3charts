@@ -7,6 +7,8 @@
 
 <script>
 import * as d3 from "d3";
+import Axis from "@/js/Axis";
+import date_CNtoEN from "@/js/date_CNtoEN";
 export default {
   data() {
     return {
@@ -29,8 +31,8 @@ export default {
       // };
       d3.select(this.$refs[this.id]).html("");
       let data = this.data;
-      //console.log(data.date);
-      let tmp = this.dateFormat(this.dateType);
+
+      let tmp = date_CNtoEN(this.dateType);
       var formatDate = d3.timeFormat(tmp);
       for (let i in data.date) {
         //console.log(data.date[i]);
@@ -92,8 +94,7 @@ export default {
         .scaleLinear()
         .domain([d3.min(flatValue) * 0.9, d3.max(flatValue)])
         .range([height, 0]);
-      var xAxis = d3.axisBottom(xScale).ticks(data.date.length);
-      var yAxis = d3.axisLeft(yScale).ticks(3);
+    
       var svg = d3
         .select(this.$refs[this.id])
         .attr("width", width + margin.left + margin.right)
@@ -126,33 +127,10 @@ export default {
         .attr("y", function(d) {
           return height - y(d);
         });
-      //x軸
-      svg
-        .append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0, ${height})`)
-        .call(xAxis);
-      //y軸
-      svg
-        .append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("y", -5)
-        .attr("x", -5)
-        .attr("transform", "rotate(0)")
-        .attr("fill", "#000")
-        .text("單價");
-    },
-    dateFormat(value) {
-      let cn = ["日", "月", "年"];
-      let en = ["%d", "%m", "%Y"];
-      let tmp = "";
-      for (let i in cn) {
-        value == cn[i] ? (tmp = en[i]) : "";
-        //tmp = (value == cn[i]) ? en[i] : tmp;
-      }
-      return tmp;
+
+      //用import進來的Axis函數 畫出x,y軸
+      Axis(xScale, yScale, svg, height, 0);
+
     }
   },
   watch: {

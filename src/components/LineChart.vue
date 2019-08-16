@@ -6,6 +6,8 @@
 
 <script>
 import * as d3 from "d3";
+import Axis from "@/js/Axis";
+import date_CNtoEN from "@/js/date_CNtoEN";
 export default {
   props: ["data", "dateType"],
 
@@ -43,9 +45,7 @@ export default {
       //console.log(data);
       /* Format Data */
 
-      let tmp = this.dateFormat(this.dateType);
-      //console.log(tmp)
-
+      let tmp = date_CNtoEN(this.dateType);
       var formatDate = d3.timeFormat(tmp);
       //var parseDate = d3.timeParse(tmp);
 
@@ -204,28 +204,8 @@ export default {
             .attr("r", circleRadius);
         });
 
-      /* Add Axis into SVG */
-      var xAxis = d3.axisBottom(xScale).ticks(5);
-      var yAxis = d3.axisLeft(yScale).ticks(3);
-
-      //x軸
-      svg
-        .append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0, ${height - margin})`)
-        .call(xAxis);
-
-      //y軸
-      svg
-        .append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("y", -5)
-        .attr("x", -5)
-        .attr("transform", "rotate(0)")
-        .attr("fill", "#000")
-        .text("單價");
+      //用import進來的Axis函數 畫出x,y軸
+      Axis(xScale, yScale, svg, height, margin);
 
       //x軸標籤
       svg
@@ -243,17 +223,18 @@ export default {
         .style("font-size", "16px")
         .style("text-decoration", "underline");
       //.text(`${this.data[0].name}`);
-    },
-    dateFormat(value) {
-      let cn = ["日", "月", "年"];
-      let en = ["%d", "%m", "%Y"];
-      let tmp = "";
-      for (let i in cn) {
-        value == cn[i] ? (tmp = en[i]) : "";
-        //tmp = (value == cn[i]) ? en[i] : tmp;
-      }
-      return tmp;
     }
+
+    // date_CNtoEN(value) {
+    //   let cn = ["日", "月", "年"];
+    //   let en = ["%d", "%m", "%Y"];
+    //   let tmp = "";
+    //   for (let i in cn) {
+    //     value == cn[i] ? (tmp = en[i]) : "";
+    //     //tmp = (value == cn[i]) ? en[i] : tmp;
+    //   }
+    //   return tmp;
+    // }
   },
   watch: {
     data: "drawChart"

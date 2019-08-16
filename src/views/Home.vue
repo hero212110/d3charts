@@ -35,7 +35,6 @@ export default {
     return {
       data: null,
       bardata: null,
-      bardata2: null,
       histogramdata: null,
       box: null,
       dateTypeArr: ["年", "月", "日"],
@@ -65,10 +64,6 @@ export default {
       if (!this.bardata | !this.dateType) return null;
       return this.bardata;
     },
-    barchartdata2() {
-      if (!this.bardata2 | !this.dateType) return null;
-      return this.bardata2;
-    }
   },
   methods: {
     sendApi() {
@@ -122,7 +117,6 @@ export default {
           }
           //console.log(barObj);
           this.bardata = barObj;
-          this.bardata2 = barObj;
         },
         error => {
           //console.log("error msg:", error);
